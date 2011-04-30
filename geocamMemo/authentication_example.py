@@ -1,3 +1,9 @@
+# __BEGIN_LICENSE__
+# Copyright (C) 2008-2010 United States Government as represented by
+# the Administrator of the National Aeronautics and Space Administration.
+# All Rights Reserved.
+# __END_LICENSE__
+
 GOOGLE_TOKEN = "blahblahblah" #copy paste your token
 
 #SID=DQAAAK4AAABnT14QB__UrAs3MtBH-6jBOPl4jMtBEZNPvneo7wAClyUmgQCSm-_CIcjBGuQxRxWNKY1S4fC17lZbGhObYVmHPT9LnHXCiqwX8WSr2mK-sFSt0k9HSVBeelAlgEWmttPcatEVOJc_Y5v_7Kj9vg4vIPA2CY6UdJkbMW0w2F5r-xSbVH5v5UUw-wnKb-PSPhLIru9DRJIqbBQ_yz4DB6d3vJ7Z-VNrhibGm49XGoV85Q
