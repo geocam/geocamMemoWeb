@@ -6,28 +6,11 @@
 
 from django.db import models
 from django.contrib.auth.models import User
-from revisions.models import VersionedModel
-from revisions.shortcuts import VersionedModel as VersionedModelShortcuts
-import revisions
 import json
 import time, datetime
-from geocamMemo import authentication
+# from geocamMemo import authentication
 
-class GeocamMessage(revisions.models.VersionedModel):
-    """ This is the abstract data model for geocam messages 
-    
-    Some of the Versioned Model API:
-        VersionedModel.get_latest_revision()
-        VersionedModel.get_revisions()
-        VersionedModel.make_current_revision()
-        VersionedModel.revert_to(criterion)
-        VersionedModel.save(new_revision=True, *vargs, **kwargs)
-        VersionedModel.show_diff_to(to, field)
-    complete API and docs are here: 
-    http://stdbrouw.github.com/django-revisions/
-
-    """
-    
+class GeocamMessage(models.Model):
     class Meta:
         abstract = True
     
@@ -63,19 +46,6 @@ class GeocamMessage(revisions.models.VersionedModel):
     pass
 
 class MemoMessage(GeocamMessage):
-    """ This is the data model for Memo application messages 
-    
-    Some of the Versioned Model API:
-        VersionedModel.get_latest_revision()
-        VersionedModel.get_revisions()
-        VersionedModel.make_current_revision()
-        VersionedModel.revert_to(criterion)
-        VersionedModel.save(new_revision=True, *vargs, **kwargs)
-        VersionedModel.show_diff_to(to, field)
-    complete API and docs are here: 
-    http://stdbrouw.github.com/django-revisions/
-
-    """
     def __unicode__(self):
         return "Memo from %s on %s: %s" % (self.author.username, self.content_timestamp, self.content)
     
@@ -118,11 +88,11 @@ class MemoMessage(GeocamMessage):
         """
         
         if (author is None):
-            # all messages are displayed (latest revisions)    
-            messages = MemoMessage.latest.all()
+            # all messages are displayed
+            messages = MemoMessage.objects.all()
         else:
             # messages displayed are from author:
-            messages = MemoMessage.latest.filter(author__username=author.username)   
+            messages = MemoMessage.objects.filter(author__username=author.username)   
         return messages.order_by('-content_timestamp')
 
 def get_user_string(user):
