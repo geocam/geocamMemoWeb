@@ -6,7 +6,7 @@
 
 from django.db import models
 from django.contrib.auth.models import User
-import json
+import geocamUtil.anyjson as json
 import time, datetime
 # from geocamMemo import authentication
 
