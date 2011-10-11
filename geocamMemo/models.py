@@ -102,7 +102,10 @@ class MemoMessage(GeocamMessage):
 
 def get_user_string(user):
     if user.first_name and user.last_name:
-        return (user.first_name + " " + user.last_name)
+        if user.last_name in ('group', 'Group'):
+            return user.first_name
+        else:
+            return (user.first_name + " " + user.last_name)
     else:
         return (user.username)
 

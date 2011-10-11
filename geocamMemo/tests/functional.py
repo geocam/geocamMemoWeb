@@ -38,13 +38,13 @@ class GeocamMemoListViewTest(TestCase):
         self.assertEqual(displayed_message_ids, message_ids, "Order should be the same")
 
     def testMessageListDateFormat(self):
-        messages = MemoMessage.latest.all()
+        messages = MemoMessage.objects.all()
         response = self.get_messages_response()
         for m in messages:
             self.assertContains(response, m.content_timestamp.strftime("%m/%d/%y %H:%M:%S"), None, 200)
 
     def testMessageListAuthorFormat(self):
-        messages = MemoMessage.latest.all()
+        messages = MemoMessage.objects.all()
         response = self.get_messages_response()
 
         for m in messages:
@@ -55,7 +55,7 @@ class GeocamMemoListViewTest(TestCase):
 
     def testMessageListContentFormat(self):
 
-        messages = MemoMessage.latest.all()
+        messages = MemoMessage.objects.all()
         response = self.get_messages_response()
         for m in messages:
             self.assertContains(response, m.content)
@@ -65,7 +65,7 @@ class GeocamMemoListViewTest(TestCase):
         response = self.get_messages_response()
 
         # act
-        geocount = MemoMessage.latest.exclude(latitude=None, longitude=None).count()
+        geocount = MemoMessage.objects.exclude(latitude=None, longitude=None).count()
 
         # assert
         self.assertContains(response, "data-icon=\"geoCam-map\"", geocount)
@@ -108,7 +108,7 @@ class GeocamMemoListViewTest(TestCase):
 
     def testEnsureMessageListAuthorLinksPresent(self):
         #arrange
-        messages = MemoMessage.latest.all()
+        messages = MemoMessage.objects.all()
 
         #act
         response = self.get_messages_response()
@@ -211,7 +211,7 @@ class GeocamMemoSingleMessageViewTest(TestCase):
 
     def testEnsureProperFieldsAreDisplayed(self):
         # arrange
-        m = MemoMessage.latest.all()[0]
+        m = MemoMessage.objects.all()[0]
 
         u = User.objects.all()[0]
         self.client.login(username=u.username, password='geocam')

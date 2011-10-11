@@ -16,7 +16,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Q, Count
 
-from geocamMemo.models import GeocamMessage
+from geocamMemo.models import GeocamMessage, get_user_string
 from geocamMemo import settings
 
 
@@ -57,6 +57,34 @@ class TalkMessage(GeocamMessage):
         return s
 
     recipients = models.ManyToManyField(User, null=True, blank=True, related_name="received_messages")
+
+    def getKml(self):
+        if not self.has_geolocation():
+            return ''
+        fields = vars(self).copy()
+        fields['authorFullname'] = self.get_author_string()
+        fields['recipients'] = ', '.join([get_user_string(r) for r in self.recipients.all()])
+        if self.content:
+            fields['name'] = '<name>' + self.content[:10] + '...</name>'
+        else:
+            fields['name'] = ''
+        return ("""
+<Placemark>
+  <Point>
+    <coordinates>%(longitude).6f,%(latitude).6f</coordinates>
+  </Point>
+  %(name)s
+  <description>
+    <![CDATA[
+      <div><span style="color: #888;">Author:</span> %(authorFullname)s</div>
+      <div><span style="color: #888;">Recipients:</span> %(recipients)s</div>
+      <div><span style="color: #888;">Date:</span> %(content_timestamp)s</div>
+      <div><span style="color: #888;">Position:</span> %(latitude).6f, %(longitude).6f</div>
+      <div style="margin: 20px;">%(content)s</div>
+    ]]>
+  </description>
+</Placemark>
+""" % fields)
 
     def getJson(self):
         return  dict(messageId=self.pk,
@@ -102,16 +130,16 @@ class TalkMessage(GeocamMessage):
         """
         if (recipient is None and author is None):
             # all messages are displayed (latest revisions)
-            messages = TalkMessage.latest.all()
+            messages = TalkMessage.objects.all()
         elif (recipient is None and author is not None):
             # messages displayed are from author:
-            messages = TalkMessage.latest.filter(author__username=author.username)
+            messages = TalkMessage.objects.filter(author__username=author.username)
         elif (recipient is not None and author is None):
             # messages displayed are broadcast + from OR to recipient:
-            messages = TalkMessage.latest.annotate(num_recipients=Count('recipients')).filter(Q(num_recipients=0) | Q(recipients__username=recipient.username) | Q(author__username=recipient.username)).distinct()
+            messages = TalkMessage.objects.annotate(num_recipients=Count('recipients')).filter(Q(num_recipients=0) | Q(recipients__username=recipient.username) | Q(author__username=recipient.username)).distinct()
         else:
             # messages displayed are braodcast + from author AND to recipient
-            messages = TalkMessage.latest.annotate(num_recipients=Count('recipients')).filter(Q(num_recipients=0) | Q(recipients__username=recipient.username)).filter(author__username=author.username).distinct()
+            messages = TalkMessage.objects.annotate(num_recipients=Count('recipients')).filter(Q(num_recipients=0) | Q(recipients__username=recipient.username)).filter(author__username=author.username).distinct()
         return messages.order_by('-content_timestamp')
 
     @staticmethod

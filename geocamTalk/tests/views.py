@@ -40,7 +40,7 @@ class GeocamTalkMessageSaveTest(TestCase):
     def test_createTalkMessage(self):
         """ Create Geocam Talk Message """
 
-        msgCnt = TalkMessage.latest.all().count()
+        msgCnt = TalkMessage.objects.all().count()
 
         content = "This is a message"
         author = User.objects.get(username="rhornsby")
@@ -50,23 +50,23 @@ class GeocamTalkMessageSaveTest(TestCase):
                                     longitude=GeocamTalkMessageSaveTest.cmusv_lon,
                                     author=author,
                                     content_timestamp=self.now)
-        newMsgCnt = TalkMessage.latest.all().count()
+        newMsgCnt = TalkMessage.objects.all().count()
         self.assertEqual(msgCnt + 1, newMsgCnt, "Creating a Talk Message Failed.")
 
     def test_deleteTalkMessage(self):
         """ Delete Geocam Talk Message """
 
-        msgCnt = TalkMessage.latest.all().count()
+        msgCnt = TalkMessage.objects.all().count()
         # delete the first message:
-        msg = TalkMessage.latest.all()[1]
+        msg = TalkMessage.objects.all()[1]
         msg.delete()
-        newMsgCnt = TalkMessage.latest.all().count()
+        newMsgCnt = TalkMessage.objects.all().count()
         self.assertEqual(newMsgCnt + 1, msgCnt, "Deleting a Talk Message Failed.")
 
     def test_submitFormToCreateMessage(self):
         """ submit the Talk Message through the form """
 
-        msgCnt = TalkMessage.latest.all().count()
+        msgCnt = TalkMessage.objects.all().count()
         content = "Whoa man, that burning building almost collapsed on me!"
         author = User.objects.get(username="rhornsby")
         self.client.login(username=author.username, password='geocam')
@@ -78,13 +78,13 @@ class GeocamTalkMessageSaveTest(TestCase):
                                         "author": author.pk})
         # should be redirected when form post is successful:
         self.assertEqual(response.status_code, 302, "submitFormToCreateMessage Failed")
-        newMsgCnt = TalkMessage.latest.all().count()
+        newMsgCnt = TalkMessage.objects.all().count()
         self.assertEqual(msgCnt + 1, newMsgCnt, "Creating a Talk Message through view Failed.")
 
     def test_submitFormToCreateMessageWithRecipients(self):
         """ submit the Talk Message through the form """
 
-        msgCnt = TalkMessage.latest.all().count()
+        msgCnt = TalkMessage.objects.all().count()
         content = "Whoa man, that burning building almost collapsed on me!"
         author = User.objects.get(username="rhornsby")
         self.client.login(username=author.username, password='geocam')
@@ -101,13 +101,13 @@ class GeocamTalkMessageSaveTest(TestCase):
 
         # should be redirected when form post is successful:
         self.assertEqual(response.status_code, 302, "submitFormToCreateMessage Failed")
-        newMsgCnt = TalkMessage.latest.all().count()
+        newMsgCnt = TalkMessage.objects.all().count()
         self.assertEqual(msgCnt + 1, newMsgCnt, "Creating a Talk Message through view Failed.")
         newMsg = TalkMessage.getMessages()[0]
         self.assertEqual(newMsg.recipients.all().count(), 2, "Different number of recipients than expected")
 
     def test_submitFormToCreateMessageJSON(self):
-        msgCnt = TalkMessage.latest.all().count()
+        msgCnt = TalkMessage.objects.all().count()
         content = "Whoa man, that burning building almost collapsed on me!"
         timestamp = self.now
         author = User.objects.get(username="rhornsby")
@@ -118,14 +118,14 @@ class GeocamTalkMessageSaveTest(TestCase):
                                         "contentTimestamp": time.mktime(timestamp.timetuple()),
                                         "latitude": GeocamTalkMessageSaveTest.cmusv_lat,
                                         "longitude": GeocamTalkMessageSaveTest.cmusv_lon})})
-        newMsgCnt = TalkMessage.latest.all().count()
+        newMsgCnt = TalkMessage.objects.all().count()
         self.assertEqual(response.status_code, 200, "submitFormToCreateMessageJSON Failed")
         self.assertContains(response, "messageId")
         self.assertContains(response, "authorFullname")
         self.assertEqual(newMsgCnt, msgCnt + 1)
 
     def testAudioMsgCreate(self):
-        _msgCnt = TalkMessage.latest.all().count()
+        _msgCnt = TalkMessage.objects.all().count()
         content = "Whoa man, that burning building almost collapsed on me!"
         timestamp = self.now
         author = User.objects.get(username="rhornsby")
@@ -147,7 +147,7 @@ class GeocamTalkMessageSaveTest(TestCase):
         f.close()
         self.assertEqual(response.status_code, 200, "Failed to move message from phone to web app")
         # get the message we just created:
-        postedFile = TalkMessage.latest.get(content=content).audio_file.name
+        postedFile = TalkMessage.objects.get(content=content).audio_file.name
         self._clean_test_files(testAudioFile, postedFile)
 
     def _createFile(self, filename, filesize=5 * 1024 * 1024):
@@ -194,7 +194,7 @@ class GeocamTalkMessageSaveTest(TestCase):
     def test_submitFormWithoutContentTalkMessage(self):
         """ submit the Talk Message without content through the form """
 
-        msgCnt = TalkMessage.latest.all().count()
+        msgCnt = TalkMessage.objects.all().count()
         author = User.objects.get(username="rhornsby")
         self.client.login(username=author.username, password='geocam')
 
@@ -204,12 +204,12 @@ class GeocamTalkMessageSaveTest(TestCase):
                                         "author": author.pk})
         # should get 200 on render_to_response when is_valid fails (which should occur)
         self.assertEqual(response.status_code, 200, "test_submitFormWithoutContentTalkMessage Failed")
-        newMsgCnt = TalkMessage.latest.all().count()
+        newMsgCnt = TalkMessage.objects.all().count()
         self.assertEqual(msgCnt, newMsgCnt, "Creating a Talk Message through view Succeeded with no content.")
 
     def test_MessageJsonFeed(self):
         # arrange
-        msg = TalkMessage.latest.all()[0]
+        msg = TalkMessage.objects.all()[0]
         stringified_msg = json.dumps(msg.getJson())
 
         self.client.login(username=msg.author.username, password='geocam')
@@ -228,7 +228,7 @@ class GeocamTalkMessageSaveTest(TestCase):
 
     def test_MessageContentOrdering(self):
 
-        ordered_messages = TalkMessage.latest.all().order_by('-content_timestamp')
+        ordered_messages = TalkMessage.objects.all().order_by('-content_timestamp')
         response = self._get_messages_response()
         response_ordered_messages = response.context["gc_msg"]
         self.assertEqual(ordered_messages[0], response_ordered_messages[0], 'Ordering of the message in the message list is not right')

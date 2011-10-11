@@ -35,7 +35,7 @@ class GeocamMemoUrls(TestCase):
 
     def testMessageJsonListUrl(self):
         #arrange
-        pk = str(MemoMessage.latest.all()[0].pk)
+        pk = str(MemoMessage.objects.all()[0].pk)
         path = "/memo/messages/details/" + pk + ".json"
 
         #act
@@ -46,7 +46,7 @@ class GeocamMemoUrls(TestCase):
 
     def testMessageDetailsUrl(self):
         #arrange
-        message = MemoMessage.latest.all()[0]
+        message = MemoMessage.objects.all()[0]
         path = "/memo/messages/details/" + str(message.pk)
         template = "geocamMemo/details.html"
 
@@ -55,7 +55,7 @@ class GeocamMemoUrls(TestCase):
 
     def testMessageEditUrl(self):
         #arrange
-        message = MemoMessage.latest.all()[0]
+        message = MemoMessage.objects.all()[0]
         path = "/memo/messages/edit/" + str(message.pk)
         template = "geocamMemo/edit_message_form.html"
 
@@ -90,7 +90,7 @@ class GeocamMemoUrls(TestCase):
 
     def testMessageDeleteUrl(self):
         #arrange
-        message = MemoMessage.latest.all()[0]
+        message = MemoMessage.objects.all()[0]
         path = "/memo/messages/delete/" + str(message.pk)
 
         #act

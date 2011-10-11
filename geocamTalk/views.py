@@ -10,6 +10,7 @@
 from datetime import datetime
 import os
 import json
+from cStringIO import StringIO
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, \
@@ -20,6 +21,7 @@ from django.core.urlresolvers import reverse
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
 
+from geocamUtil import KmlUtil
 from geocamTalk.models import TalkMessage
 from geocamTalk.forms import GeocamTalkForm
 
@@ -76,32 +78,35 @@ def message_list(request, recipient_username=None, author_username=None):
                                context_instance=RequestContext(request))
 
 
-def feed_messages(request, recipient_username=None, author_username=None):
-    if not request.user.is_authenticated():
-        return HttpResponseForbidden()
+def get_messages(request, recipient_username=None, author_username=None):
+    timestamp = TalkMessage.getLargestMessageId()
+    if recipient_username is not None:
+        recipient = get_object_or_404(User, username=recipient_username)
     else:
-        timestamp = TalkMessage.getLargestMessageId()
-        if recipient_username is not None:
-            recipient = get_object_or_404(User, username=recipient_username)
-        else:
-            recipient = None
+        recipient = None
 
-        if author_username is not None:
-            author = get_object_or_404(User, username=author_username)
-        else:
-            author = None
-        since = request.GET.get('since', None)
+    if author_username is not None:
+        author = get_object_or_404(User, username=author_username)
+    else:
+        author = None
+    since = request.GET.get('since', None)
 
-        if since is not None:
-            since_dt = since
-            messages = TalkMessage.getMessages(recipient, author).filter(pk__gt=since_dt)
-            message_count = TalkMessage.getMessages(request.user).filter(pk__gt=since_dt).count()
-        else:
-            messages = TalkMessage.getMessages(recipient, author)
-            message_count = TalkMessage.getMessages(request.user).count()
-        return HttpResponse(json.dumps({'ts': timestamp,
-                                        'msgCnt': message_count,
-                                        'ms': [msg.getJson() for msg in messages]}))
+    if since is not None:
+        since_dt = since
+        messages = TalkMessage.getMessages(recipient, author).filter(pk__gt=since_dt)
+        message_count = TalkMessage.getMessages(request.user).filter(pk__gt=since_dt).count()
+    else:
+        messages = TalkMessage.getMessages(recipient, author)
+        message_count = TalkMessage.getMessages(request.user).count()
+    return timestamp, messages, message_count
+
+
+@login_required
+def feed_messages(request, recipient_username=None, author_username=None):
+    timestamp, messages, message_count = get_messages(request, recipient_username, author_username)
+    return HttpResponse(json.dumps({'ts': timestamp,
+                                    'msgCnt': message_count,
+                                    'ms': [msg.getJson() for msg in messages]}))
 
 
 def message_details_json(request, message_id):
@@ -210,3 +215,14 @@ def create_message_json(request):
             return HttpResponseServerError()
     else:
         return HttpResponseForbidden()
+
+
+@login_required
+def feed_messages_kml(request, recipient_username=None, author_username=None):
+    _timestamp, messages, _message_count = get_messages(request, recipient_username, author_username)
+    out = StringIO()
+    out.write("<Document>")
+    for msg in messages:
+        out.write(msg.getKml())
+    out.write("</Document>")
+    return KmlUtil.wrapKmlDjango(out.getvalue())

@@ -33,7 +33,7 @@ class GeocamMemoMessageSaveTest(TestCase):
     def test_createMessage(self):
         """ Create Geocam Message """
 
-        msgCnt = MemoMessage.latest.all().count()
+        msgCnt = MemoMessage.objects.all().count()
 
         content = "This is a message"
         author = User.objects.get(username="rhornsby")
@@ -49,11 +49,11 @@ class GeocamMemoMessageSaveTest(TestCase):
     def test_deleteMessage(self):
         """ Delete Geocam Message """
 
-        msgCnt = MemoMessage.latest.all().count()
-        msg = MemoMessage.latest.all()[1]
+        msgCnt = MemoMessage.objects.all().count()
+        msg = MemoMessage.objects.all()[1]
         # delete the first message and all it's revisions:
         msg.delete()
-        newMsgCnt = MemoMessage.latest.all().count()
+        newMsgCnt = MemoMessage.objects.all().count()
         self.assertEqual(newMsgCnt + 1, msgCnt, "Deleting a Message Failed.")
 
     def test_submitFormToCreateMessage(self):
@@ -69,7 +69,7 @@ class GeocamMemoMessageSaveTest(TestCase):
         self.assertEqual(response.status_code, 200, "submitFormToCreateMessage Failed")
 
     def test_submitFormToCreateMessageJSON(self):
-        msgCnt = MemoMessage.latest.all().count()
+        msgCnt = MemoMessage.objects.all().count()
         content = "Whoa man, that burning building almost collapsed on me!"
         timestamp = self.now
         author = User.objects.get(username="rhornsby")
@@ -80,7 +80,7 @@ class GeocamMemoMessageSaveTest(TestCase):
                                         "contentTimestamp": time.mktime(timestamp.timetuple()),
                                         "latitude": GeocamMemoMessageSaveTest.cmusv_lat,
                                         "longitude": GeocamMemoMessageSaveTest.cmusv_lon})})
-        newMsgCnt = MemoMessage.latest.all().count()
+        newMsgCnt = MemoMessage.objects.all().count()
         self.assertEqual(response.status_code, 200, "submitFormToCreateMessageJSON Failed")
         self.assertEqual(newMsgCnt, msgCnt + 1)
 
@@ -97,7 +97,7 @@ class GeocamMemoMessageSaveTest(TestCase):
 
     def test_MessageJsonFeed(self):
         # arrange
-        msg = MemoMessage.latest.all().reverse()[0]
+        msg = MemoMessage.objects.all().reverse()[0]
         stringified_msg = json.dumps(msg.getJson())
 
         #self.client.login(username="root", password='geocam')
@@ -175,8 +175,8 @@ class GeocamMemoMessageEditAndDeleteTest(TestCase):
         self.assertEqual(new_msg.longitude, original_msg.longitude, "submitFormToEditMessage Failed")
 
     def test_ensureDeleteByNonAuthorForbidden(self):
-        m = MemoMessage.latest.all()[0]
-        msgCnt = MemoMessage.latest.all().count()
+        m = MemoMessage.objects.all()[0]
+        msgCnt = MemoMessage.objects.all().count()
 
         for user in User.objects.all():
             if user.pk != m.author.pk and not user.is_superuser:
@@ -184,15 +184,15 @@ class GeocamMemoMessageEditAndDeleteTest(TestCase):
                 break
         response = self.client.post("/memo/messages/delete/%s" % m.pk)
         self.assertEqual(response.status_code, 302, "ensureDeleteByNonAuthorForbidden Failed")
-        newMsgCnt = MemoMessage.latest.all().count()
+        newMsgCnt = MemoMessage.objects.all().count()
         self.assertEqual(msgCnt, newMsgCnt, "ensureDeleteByNonAuthorForbidden Failed")
 
     def test_deleteMessage(self):
         "Delete the Memo Message"
-        m = MemoMessage.latest.all()[0]
-        msgCnt = MemoMessage.latest.all().count()
+        m = MemoMessage.objects.all()[0]
+        msgCnt = MemoMessage.objects.all().count()
         self.loginUser(m.author.pk)
         response = self.client.post("/memo/messages/delete/%s" % m.pk)
         self.assertEqual(response.status_code, 302, "deleteMessage Failed")
-        newMsgCnt = MemoMessage.latest.all().count()
+        newMsgCnt = MemoMessage.objects.all().count()
         self.assertEqual(msgCnt - 1, newMsgCnt, "deleteMessage Failed")

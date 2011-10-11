@@ -45,7 +45,7 @@ class GeocamTestUrls(TestCase):
 
     def testMessageJsonUrl(self):
         #arrange
-        pk = str(TalkMessage.latest.all()[0].pk)
+        pk = str(TalkMessage.objects.all()[0].pk)
         path = "/talk/messages/details/" + pk + ".json"
         self.login()
 
