@@ -24,6 +24,7 @@ from django.contrib.auth.models import User
 from geocamUtil import KmlUtil
 from geocamTalk.models import TalkMessage
 from geocamTalk.forms import GeocamTalkForm
+from geocamTalk import settings
 
 
 def get_first_geolocation(messages):
@@ -217,11 +218,20 @@ def create_message_json(request):
         return HttpResponseForbidden()
 
 
-@login_required
 def feed_messages_kml(request, recipient_username=None, author_username=None):
     _timestamp, messages, _message_count = get_messages(request, recipient_username, author_username)
     out = StringIO()
-    out.write("<Document>")
+    iconHref = request.build_absolute_uri(settings.MEDIA_URL + 'geocamTalk/icons/word_bubble.png')
+    out.write("""
+<Document>
+  <Style id="talkMarker">
+    <IconStyle>
+      <Icon>
+        <href>%(iconHref)s</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+    """ % dict(iconHref=iconHref))
     for msg in messages:
         out.write(msg.getKml())
     out.write("</Document>")

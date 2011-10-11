@@ -66,6 +66,33 @@ class MemoMessage(GeocamMessage):
                     accuracy=self.accuracy,
                     hasGeolocation=bool(self.has_geolocation()))
 
+    def getKml(self):
+        if not self.has_geolocation():
+            return ''
+        fields = vars(self).copy()
+        fields['authorFullname'] = self.get_author_string()
+        if self.content:
+            fields['name'] = '<name>' + self.content[:10] + '...</name>'
+        else:
+            fields['name'] = ''
+        return ("""
+<Placemark>
+  <Point>
+    <coordinates>%(longitude).6f,%(latitude).6f</coordinates>
+  </Point>
+  %(name)s
+  <description>
+    <![CDATA[
+      <div><span style="color: #888;">Author:</span> %(authorFullname)s</div>
+      <div><span style="color: #888;">Date:</span> %(content_timestamp)s</div>
+      <div><span style="color: #888;">Position:</span> %(latitude).6f, %(longitude).6f</div>
+      <div style="margin: 20px;">%(content)s</div>
+    ]]>
+  </description>
+  <styleUrl>#memoMarker</styleUrl>
+</Placemark>
+""" % fields)
+
     @staticmethod
     def fromJson(messageDict):
         message = MemoMessage()

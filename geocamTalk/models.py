@@ -83,6 +83,7 @@ class TalkMessage(GeocamMessage):
       <div style="margin: 20px;">%(content)s</div>
     ]]>
   </description>
+  <styleUrl>#talkMarker</styleUrl>
 </Placemark>
 """ % fields)
 

@@ -36,5 +36,6 @@ urlpatterns = patterns('geocamTalk.views',
     url(r'^map$', 'message_map',
         name="talk_message_map"),
     url(r'^messages\.kml$', 'feed_messages_kml',
+        {'readOnly': True},
         name='talk_message_list_all_kml'),
 )

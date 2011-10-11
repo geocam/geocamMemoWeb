@@ -6,6 +6,7 @@
 
 from datetime import datetime
 import json
+from cStringIO import StringIO
 
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden, HttpResponseServerError
 from django.template import RequestContext
@@ -14,8 +15,10 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, render_to_response
 
+from geocamUtil import KmlUtil
 from geocamMemo.models import MemoMessage
 from geocamMemo.forms import MemoMessageForm
+from geocamMemo import settings
 
 
 def get_first_geolocation(messages):
@@ -147,3 +150,39 @@ def delete_message(request, message_id):
     if message.author.username == request.user.username or request.user.is_superuser:
         message.delete()
     return HttpResponseRedirect(reverse('memo_message_list_all'))
+
+def get_messages(request, author_username=None):
+    if author_username is not None:
+        author = get_object_or_404(User, username=author_username)
+    else:
+        author = None
+    since = request.GET.get('since', None)
+
+    if since is not None:
+        since_dt = since
+        messages = MemoMessage.getMessages(author).filter(pk__gt=since_dt)
+        message_count = MemoMessage.getMessages(request.user).filter(pk__gt=since_dt).count()
+    else:
+        messages = MemoMessage.getMessages(author)
+        message_count = MemoMessage.getMessages(request.user).count()
+    return messages, message_count
+
+
+def feed_messages_kml(request, author_username=None):
+    messages, _message_count = get_messages(request, author_username)
+    out = StringIO()
+    iconHref = request.build_absolute_uri(settings.MEDIA_URL + 'geocamMemo/icons/note.png')
+    out.write("""
+<Document>
+  <Style id="memoMarker">
+    <IconStyle>
+      <Icon>
+        <href>%(iconHref)s</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+    """ % dict(iconHref=iconHref))
+    for msg in messages:
+        out.write(msg.getKml())
+    out.write("</Document>")
+    return KmlUtil.wrapKmlDjango(out.getvalue())
