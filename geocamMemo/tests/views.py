@@ -51,7 +51,7 @@ class GeocamMemoMessageSaveTest(TestCase):
 
         msgCnt = MemoMessage.objects.all().count()
         msg = MemoMessage.objects.all()[1]
-        # delete the first message and all it's revisions:
+        # delete the first message
         msg.delete()
         newMsgCnt = MemoMessage.objects.all().count()
         self.assertEqual(newMsgCnt + 1, msgCnt, "Deleting a Message Failed.")
