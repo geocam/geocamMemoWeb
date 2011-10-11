@@ -4,6 +4,9 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
+# wildcard imports ok
+# pylint: disable=W0401
+
 from geocamMemo.tests.unit import *
 from geocamMemo.tests.views import *
 from geocamMemo.tests.functional import *

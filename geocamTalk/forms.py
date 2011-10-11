@@ -4,16 +4,19 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
-from django import forms
-from geocamTalk.models import TalkMessage
 from datetime import datetime
 import re
 
+from django import forms
+
+from geocamTalk.models import TalkMessage
+
+
 class GeolocationTimestampDateTimeFormField(forms.DateTimeField):
     def clean(self, value):
-        """ datetime from geolocation timestamp 
+        """ datetime from geolocation timestamp
         ex: Sat Feb 19 2011 15:37:53 GMT-0800 (PST)"""
-        
+
         try:
             if value is not None:
                 m = re.match(r"(\S+ \S+ \d+ \d+ \d+\:\d+\:\d+)", value)
@@ -24,11 +27,13 @@ class GeolocationTimestampDateTimeFormField(forms.DateTimeField):
                 else:
                     return None
             else:
-                return None     
+                return None
         except:
             raise forms.ValidationError
-    
+
+
 class GeocamTalkForm(forms.ModelForm):
     position_timestamp = GeolocationTimestampDateTimeFormField()
+
     class Meta:
         model = TalkMessage

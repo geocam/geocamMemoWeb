@@ -5,10 +5,9 @@
 # __END_LICENSE__
 
 from django.shortcuts import render_to_response
-from django.http import HttpResponseRedirect, HttpResponseForbidden, Http404
+from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render_to_response
 from django import forms
 
 def logout_view(request):
@@ -37,4 +36,5 @@ def login_view(request):
         
 class LoginForm(forms.Form):
     username = forms.CharField(label=(u'Username'))
-    password = forms.CharField(label=(u'Password'),widget=forms.PasswordInput(render_value=False))
+    password = forms.CharField(label=(u'Password'),
+                               widget=forms.PasswordInput(render_value=False))

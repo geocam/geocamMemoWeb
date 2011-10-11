@@ -5,21 +5,21 @@
 # __END_LICENSE__
 
 from django.contrib import admin
+
 from geocamMemo.models import MemoMessage
-from django.contrib import admin
+
 
 class MemoMessageAdmin(admin.ModelAdmin):
-    list_display = ('author', 
+    list_display = ('author',
                     'content',
-                    'content_timestamp', 
-                    'latitude', 
+                    'content_timestamp',
+                    'latitude',
                     'longitude',
                     'altitude',
                     'accuracy',
                     'heading',
                     'speed',
-                    'position_timestamp' )
+                    'position_timestamp')
     list_filter = ['author']
 
 admin.site.register(MemoMessage, MemoMessageAdmin)
-

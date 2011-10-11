@@ -4,28 +4,33 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
+# suppress bogus messages about missing class members
+# pylint: disable=E1101
+
+from datetime import datetime
+import os
+import json
+
 from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, \
-    HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, \
+    HttpResponseBadRequest, HttpResponseServerError
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.core.files.base import ContentFile
+from django.contrib.auth.models import User
+
 from geocamTalk.models import TalkMessage
 from geocamTalk.forms import GeocamTalkForm
-from django.core.files.base import ContentFile
-from datetime import datetime
-import time
-import os
-from django.contrib.auth.models import User
-from django.db.models import Q, Count
-import json
+
 
 def get_first_geolocation(messages):
     """ return the first geotagged message lat and long as tuple """
     try:
         return [(m.latitude, m.longitude) for m in messages if m.has_geolocation()][0]
-    except:
+    except:  # pylint: disable=W0702
         return ()
+
 
 @login_required
 def message_map(request):
@@ -34,33 +39,35 @@ def message_map(request):
                               dict(gc_msg=messages,
                                    first_geolocation=get_first_geolocation(messages)),
                               context_instance=RequestContext(request))
-    
+
+
 @login_required
 def clear_messages(request):
     profile = request.user.profile
     profile.last_viewed_mymessages = TalkMessage.getLargestMessageId()
     profile.save()
-    
+
     return HttpResponse(json.dumps({'ts': TalkMessage.getLargestMessageId()}))
 
+
 @login_required
-def message_list(request, recipient_username=None, author_username=None):   
+def message_list(request, recipient_username=None, author_username=None):
     timestamp = TalkMessage.getLargestMessageId()
     if recipient_username is not None:
         recipient = get_object_or_404(User, username=recipient_username)
     else:
         recipient = None
-        
+
     if author_username is not None:
         author = get_object_or_404(User, username=author_username)
     else:
         author = None
-    
+
     if recipient is not None and recipient.pk == request.user.pk and author is None:
         profile = recipient.profile
         profile.last_viewed_mymessages = timestamp
         profile.save()
-    
+
     return render_to_response('geocamTalk/message_list.html',
                                dict(gc_msg=TalkMessage.getMessages(recipient, author),
                                    recipient=recipient,
@@ -72,29 +79,29 @@ def message_list(request, recipient_username=None, author_username=None):
 def feed_messages(request, recipient_username=None, author_username=None):
     if not request.user.is_authenticated():
         return HttpResponseForbidden()
-    else:        
+    else:
         timestamp = TalkMessage.getLargestMessageId()
         if recipient_username is not None:
             recipient = get_object_or_404(User, username=recipient_username)
         else:
             recipient = None
-            
+
         if author_username is not None:
             author = get_object_or_404(User, username=author_username)
         else:
             author = None
         since = request.GET.get('since', None)
-        
+
         if since is not None:
             since_dt = since
             messages = TalkMessage.getMessages(recipient, author).filter(pk__gt=since_dt)
-            message_count = TalkMessage.getMessages(request.user).filter(pk__gt=since_dt).count() 
+            message_count = TalkMessage.getMessages(request.user).filter(pk__gt=since_dt).count()
         else:
             messages = TalkMessage.getMessages(recipient, author)
             message_count = TalkMessage.getMessages(request.user).count()
         return HttpResponse(json.dumps({'ts': timestamp,
                                         'msgCnt': message_count,
-                                        'ms':[msg.getJson() for msg in messages]}))
+                                        'ms': [msg.getJson() for msg in messages]}))
 
 
 def message_details_json(request, message_id):
@@ -104,19 +111,22 @@ def message_details_json(request, message_id):
         message = get_object_or_404(TalkMessage, pk=message_id)
         return HttpResponse(json.dumps(message.getJson()))
 
+
 @login_required
 def message_details(request, message_id):
     message = get_object_or_404(TalkMessage, pk=message_id)
-            
+
     return render_to_response('geocamTalk/details.html',
-                              {'message':message},
+                              {'message': message},
                               context_instance=RequestContext(request))
+
 
 @login_required
 def index(request):
     return render_to_response('geocamTalk/home.html',
                               dict(),
                               context_instance=RequestContext(request))
+
 
 @login_required
 def create_message(request):
@@ -141,34 +151,36 @@ def create_message(request):
                                   dict(form=form),
                                   context_instance=RequestContext(request))
 
-  
+
 def register(request):
     if not request.user.is_authenticated():
         return HttpResponseForbidden()
-    else:  
+    else:
         if request.method == 'POST':
-            try: #to access the POST object via a potentially nonexistant key
+            try:  # to access the POST object via a potentially nonexistant key
                 regid = request.POST["registration_id"]
             except KeyError:
                 return HttpResponseBadRequest()
-    
+
             profile = request.user.profile
             profile.registration_id = regid
             profile.save()
             return HttpResponse("", 200)
         else:
-            return HttpResponseBadRequest()        
+            return HttpResponseBadRequest()
+
 
 def unregister(request):
     if not request.user.is_authenticated():
         return HttpResponseForbidden()
-    else:  
+    else:
         profile = request.user.profile
         profile.registration_id = None
         profile.save()
         return HttpResponse("", 200)
-        
-def create_message_json(request):    
+
+
+def create_message_json(request):
     if request.user.is_authenticated():
         if request.method == 'POST':
             jsonstring = request.POST["message"]
@@ -179,7 +191,7 @@ def create_message_json(request):
             if "audio" in request.FILES:
                 filename = "%s%s.mp4" % (message.author, message.content_timestamp.strftime("%H%M%S"))
                 file_content = ContentFile(request.FILES['audio'].read())
-                file_format = os.path.splitext(request.FILES['audio'].name)[-1]
+                _file_format = os.path.splitext(request.FILES['audio'].name)[-1]
                 message.audio_file.save(filename, file_content)
             try:
                 print message
@@ -188,13 +200,12 @@ def create_message_json(request):
                 message.push_to_phone(False)
                 print "PUSHED"
                 return HttpResponse(json.dumps(
-                        {"messageId":"%s" % message.pk,
-                          "authorFullname":message.get_author_string(),
-                          "audioUrl":message.get_audio_url()
-                        }), 200) 
-            except:
-                
-                return HttpResponseServerError() # TODO: change the tests and here to respond with HttpResponseBadRequest
+                        {"messageId": "%s" % message.pk,
+                          "authorFullname": message.get_author_string(),
+                          "audioUrl": message.get_audio_url()
+                        }), 200)
+            except:  # pylint: disable=W0702
+                return HttpResponseServerError()  # TODO: change the tests and here to respond with HttpResponseBadRequest
         else:
             return HttpResponseServerError()
     else:

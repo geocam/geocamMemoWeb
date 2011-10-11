@@ -5,23 +5,23 @@
 # __END_LICENSE__
 
 from django.contrib import admin
+
 from geocamTalk.models import TalkMessage
 from geocamTalk.models import TalkUserProfile
-from django.contrib import admin
+
 
 class TalkMessageAdmin(admin.ModelAdmin):
-    list_display = ('author', 
+    list_display = ('author',
                     'content',
-                    'content_timestamp', 
-                    'latitude', 
+                    'content_timestamp',
+                    'latitude',
                     'longitude',
                     'altitude',
                     'accuracy',
                     'heading',
                     'speed',
-                    'position_timestamp' )
+                    'position_timestamp')
     list_filter = ['author']
 
 admin.site.register(TalkMessage, TalkMessageAdmin)
 admin.site.register(TalkUserProfile)
-

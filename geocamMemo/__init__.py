@@ -16,12 +16,13 @@ __version_info__ = {
     'serial': 1
 }
 
+
 def get_version():
     """
     Return the formatted version information
     """
     vers = ["%(major)i.%(minor)i" % __version_info__, ]
-    
+
     if __version_info__['micro']:
         vers.append(".%(micro)i" % __version_info__)
     if __version_info__['releaselevel'] != 'final':
@@ -35,7 +36,7 @@ try:
     from geocamUtil.MultiSettings import MultiSettings
 except ImportError:
     import sys
-    print >>sys.stderr, "warning: geocamUtil not installed, can't load defaultSettings.py"
+    print >> sys.stderr, "warning: geocamUtil not installed, can't load defaultSettings.py"
 
 if MultiSettings:
     import django.conf

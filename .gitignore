@@ -16,3 +16,5 @@ media/css/*.r*.css
 .settings
 geocamMemo/authentication.py
 example/media/*
+\#.*\#
+.\#*

@@ -44,6 +44,8 @@ source_suffix = '.rst'
 # The master toctree document.
 master_doc = 'index'
 
+# pylint: disable=W0622
+
 # General information about the project.
 project = u'geocamMemoWeb'
 copyright = u'2008-2010 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved'
