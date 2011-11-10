@@ -95,14 +95,13 @@ def get_messages(request, recipient_username=None, author_username=None):
     if since is not None:
         since_dt = since
         messages = TalkMessage.getMessages(recipient, author).filter(pk__gt=since_dt)
-        message_count = TalkMessage.getMessages(request.user).filter(pk__gt=since_dt).count()
+        message_count = TalkMessage.getMessages(recipient).filter(pk__gt=since_dt).count()
     else:
         messages = TalkMessage.getMessages(recipient, author)
-        message_count = TalkMessage.getMessages(request.user).count()
+        message_count = TalkMessage.getMessages(recipient).count()
     return timestamp, messages, message_count
 
 
-@login_required
 def feed_messages(request, recipient_username=None, author_username=None):
     timestamp, messages, message_count = get_messages(request, recipient_username, author_username)
     return HttpResponse(json.dumps({'ts': timestamp,
