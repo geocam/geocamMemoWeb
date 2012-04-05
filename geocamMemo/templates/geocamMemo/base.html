@@ -8,8 +8,7 @@
             {% endblock %}
         </title>
         <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0a3/jquery.mobile-1.0a3.min.css" />
-        <link rel="stylesheet" href="/resources/css/jquery.mobile.css" />
-        <link rel="stylesheet" href="/resources/css/site.css" />
+        <link rel="stylesheet" href="{{ MEDIA_URL }}external/css/jquery.mobile.css" />
         <script src="http://code.jquery.com/jquery-1.5.min.js"></script>
 		<script type="text/javascript">
 			$(document).bind("mobileinit", function () {
@@ -31,8 +30,8 @@
 	        		<a href="/" data-icon="home" data-iconpos="notext" data-direction="reverse" class="ui-btn-right jqm-home">Home</a>
 	        		<div data-role="navbar">
 		        		<ul>
-		        			<li><a href="{% url geocamMemo.views.message_list %}">Memo List</a></li>
-		        			<li><a href="{% url geocamMemo.views.message_map %}">Memo Map</a></li>
+		        			<li><a href="{% url memo_message_list_all %}">Memo List</a></li>
+		        			<li><a href="{% url memo_message_map %}">Memo Map</a></li>
 		        		</ul>
 	        		</div>
 	        	</div>

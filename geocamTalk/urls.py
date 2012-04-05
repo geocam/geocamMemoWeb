@@ -4,9 +4,14 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
+import django.views.generic.simple
 from django.conf.urls.defaults import *  # pylint: disable=W0401
 
 urlpatterns = patterns('geocamTalk.views',
+    url(r'^$', django.views.generic.simple.redirect_to,
+        {'url': 'messages', 'permanent': False},
+        name='talk_home'),
+                       
     url(r'^register$', 'register',
          name='talk_register_c2dm'),
     url(r'^unregister$', 'unregister',
@@ -29,6 +34,8 @@ urlpatterns = patterns('geocamTalk.views',
          name="talk_message_list_all_json"),
     url(r'^messages/(?P<recipient_username>[^ ]+)/(?P<author_username>[^ ]+)$', 'message_list',
          name="talk_message_list_to_from"),
+    url(r'^messages/(?P<recipient_username>[^ ]+)$', 'message_list',
+         name="talk_message_list_to"),
     url(r'^messages/(?P<recipient_username>[^ ]+)$', 'message_list',
          name="talk_message_list_author"),
     url(r'^messages$', 'message_list',

@@ -4,9 +4,14 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
+import django.views.generic.simple
 from django.conf.urls.defaults import *  # pylint: disable=W0401
 
 urlpatterns = patterns('geocamMemo.views',
+    url(r'^$', django.views.generic.simple.redirect_to,
+        {'url': 'messages', 'permanent': False},
+        name='memo_home'),
+                       
     url(r'^messages/create.json$', 'create_message_json',
         name='memo_create_message_json'),
     url(r'^messages/create$', 'create_message',

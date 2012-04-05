@@ -11,7 +11,6 @@ from cStringIO import StringIO
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden, HttpResponseServerError
 from django.template import RequestContext
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, render_to_response
 
@@ -30,7 +29,6 @@ def get_first_geolocation(messages):
         return ()
 
 
-@login_required
 def message_map(request):
     messages = MemoMessage.getMessages()
     return render_to_response('geocamMemo/map.html',
@@ -39,7 +37,6 @@ def message_map(request):
                               context_instance=RequestContext(request))
 
 
-@login_required
 def message_list(request, author_username=None):
     if author_username is not None:
         author = get_object_or_404(User, username=author_username)
@@ -60,12 +57,10 @@ def message_list_json(request):
         return HttpResponseForbidden()
 
 
-@login_required
 def index(request):
     return HttpResponseRedirect(reverse('memo_message_list_all'))
 
 
-@login_required
 def message_details(request, message_id):
     message = get_object_or_404(MemoMessage, pk=message_id)
 
@@ -80,7 +75,6 @@ def message_details_json(request, message_id):
     return HttpResponse(json.dumps(message.getJson()))
 
 
-@login_required
 def create_message(request):
     if request.method == 'POST':
         form = MemoMessageForm(request.POST)
@@ -120,7 +114,6 @@ def create_message_json(request):
         return HttpResponseForbidden()
 
 
-@login_required
 def edit_message(request, message_id):
     message = MemoMessage.objects.get(pk=message_id)
     if message.author.username != request.user.username and not request.user.is_superuser:
@@ -144,7 +137,6 @@ def edit_message(request, message_id):
                                   context_instance=RequestContext(request))
 
 
-@login_required
 def delete_message(request, message_id):
     message = MemoMessage.objects.get(pk=message_id)
     if message.author.username == request.user.username or request.user.is_superuser:

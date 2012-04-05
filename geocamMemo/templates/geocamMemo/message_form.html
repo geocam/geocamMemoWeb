@@ -74,7 +74,7 @@
 
 <p><div id='status'></div></p>
 <p>Current time: <span id='time'></span></p>
-<form action="/memo/messages/create/" method="post">
+<form action="{% url memo_create_message %}" method="post">
 	{% csrf_token %}
 	<dl>
         <dt>{{ form.content.label_tag }}</dt>

@@ -35,7 +35,6 @@ def get_first_geolocation(messages):
         return ()
 
 
-@login_required
 def message_map(request):
     messages = TalkMessage.getMessages()
     return render_to_response('geocamTalk/map.html',
@@ -44,7 +43,6 @@ def message_map(request):
                               context_instance=RequestContext(request))
 
 
-@login_required
 def clear_messages(request):
     profile = request.user.profile
     profile.last_viewed_mymessages = TalkMessage.getLargestMessageId()
@@ -53,7 +51,6 @@ def clear_messages(request):
     return HttpResponse(json.dumps({'ts': TalkMessage.getLargestMessageId()}))
 
 
-@login_required
 def message_list(request, recipient_username=None, author_username=None):
     timestamp = TalkMessage.getLargestMessageId()
     if recipient_username is not None:
@@ -117,7 +114,6 @@ def message_details_json(request, message_id):
         return HttpResponse(json.dumps(message.getJson()))
 
 
-@login_required
 def message_details(request, message_id):
     message = get_object_or_404(TalkMessage, pk=message_id)
 
@@ -126,14 +122,12 @@ def message_details(request, message_id):
                               context_instance=RequestContext(request))
 
 
-@login_required
 def index(request):
     return render_to_response('geocamTalk/home.html',
                               dict(),
                               context_instance=RequestContext(request))
 
 
-@login_required
 def create_message(request):
     if request.method == 'POST':
         form = GeocamTalkForm(request.POST)
