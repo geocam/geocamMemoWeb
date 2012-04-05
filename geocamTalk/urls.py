@@ -10,39 +10,54 @@ from django.conf.urls.defaults import *  # pylint: disable=W0401
 urlpatterns = patterns('geocamTalk.views',
     url(r'^$', django.views.generic.simple.redirect_to,
         {'url': 'messages', 'permanent': False},
-        name='talk_home'),
+        name='geocamTalk_home'),
                        
     url(r'^register$', 'register',
-         name='talk_register_c2dm'),
+         name='geocamTalk_register_c2dm'),
+
     url(r'^unregister$', 'unregister',
-         name='talk_unregister_c2dm'),
+         name='geocamTalk_unregister_c2dm'),
+
     url(r'^messages/create.json$', 'create_message_json',
-         name='talk_create_message_json'),
+         name='geocamTalk_create_message_json'),
+
     url(r'^messages/create$', 'create_message',
-         name='talk_create_message'),
+         name='geocamTalk_create_message'),
+
     url(r'^messages/clear$', 'clear_messages',
-         name='talk_clear_messages'),
+         name='geocamTalk_clear_messages'),
+
     url(r'^messages/details/(?P<message_id>\d+).json$', 'message_details_json',
-        name="talk_message_details_json"),
+        name="geocamTalk_message_details_json"),
+
     url(r'^messages/details/(?P<message_id>\d+)$', 'message_details',
-        name="talk_message_details"),
+        name="geocamTalk_message_details"),
+
     url(r'^messages/(?P<recipient_username>[^ ]+)/(?P<author_username>[^ ]+).json$', 'feed_messages',
-         name="talk_message_list_to_from_json"),
+         name="geocamTalk_message_list_to_from_json"),
+
     url(r'^messages/(?P<recipient_username>[^ ]+).json$', 'feed_messages',
-         name="talk_message_list_author_json"),
+         name="geocamTalk_message_list_author_json"),
+
     url(r'^messages.json$', 'feed_messages',
-         name="talk_message_list_all_json"),
+         name="geocamTalk_message_list_all_json"),
+
     url(r'^messages/(?P<recipient_username>[^ ]+)/(?P<author_username>[^ ]+)$', 'message_list',
-         name="talk_message_list_to_from"),
+         name="geocamTalk_message_list_to_from"),
+
     url(r'^messages/(?P<recipient_username>[^ ]+)$', 'message_list',
-         name="talk_message_list_to"),
+         name="geocamTalk_message_list_to"),
+
     url(r'^messages/(?P<recipient_username>[^ ]+)$', 'message_list',
-         name="talk_message_list_author"),
+         name="geocamTalk_message_list_author"),
+
     url(r'^messages$', 'message_list',
-         name="talk_message_list_all"),
+         name="geocamTalk_message_list_all"),
+
     url(r'^map$', 'message_map',
-        name="talk_message_map"),
+        name="geocamTalk_message_map"),
+
     url(r'^messages\.kml$', 'feed_messages_kml',
         {'readOnly': True},
-        name='talk_message_list_all_kml'),
+        name='geocamTalk_message_list_all_kml'),
 )

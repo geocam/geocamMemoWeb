@@ -18,7 +18,7 @@ class GeocamTestUrls(TestCase):
 
     def testMessageListUrl(self):
         #arrange
-        path = "/talk/messages/"
+        path = "FIXME/messages/"
         template = "geocamTalk/message_list.html"
 
         #act
@@ -27,7 +27,7 @@ class GeocamTestUrls(TestCase):
     def testMyMessageListUrl(self):
         me = User.objects.all()[0]
         #arrange
-        path = "/talk/messages/%s" % me.username
+        path = "FIXME/messages/%s" % me.username
         template = "geocamTalk/message_list.html"
 
         #act
@@ -35,7 +35,7 @@ class GeocamTestUrls(TestCase):
 
     def testMessageCreateJSONFeed(self):
         #arrange
-        path = "/talk/messages/create.json"
+        path = "FIXME/messages/create.json"
 
         #act
         guestResponse = self.client.post(path, {})
@@ -46,7 +46,7 @@ class GeocamTestUrls(TestCase):
     def testMessageJsonUrl(self):
         #arrange
         pk = str(TalkMessage.objects.all()[0].pk)
-        path = "/talk/messages/details/" + pk + ".json"
+        path = "FIXME/messages/details/" + pk + ".json"
         self.login()
 
         #act
@@ -58,7 +58,7 @@ class GeocamTestUrls(TestCase):
     def testClearMyMessageCount(self):
         #arrange
         _me = User.objects.all()[0]
-        path = "/talk/messages/clear"
+        path = "FIXME/messages/clear"
         self.login()
 
         #act
@@ -69,7 +69,7 @@ class GeocamTestUrls(TestCase):
 
     def testMessageCreateUrl(self):
         #arrange
-        path = "/talk/messages/create"
+        path = "FIXME/messages/create"
         template = "geocamTalk/message_form.html"
 
         #act
@@ -77,7 +77,7 @@ class GeocamTestUrls(TestCase):
 
     def testMessageJSONFeedUrl(self):
         #arrange
-        path = "/talk/messages.json"
+        path = "FIXME/messages.json"
 
         #act
         guestResponse = self.getResponse(path)
@@ -91,7 +91,7 @@ class GeocamTestUrls(TestCase):
     def testMyMessageJSONFeedUrl(self):
         #arrange
         me = User.objects.all()[0]
-        path = "/talk/messages/%s.json" % me.username
+        path = "FIXME/messages/%s.json" % me.username
 
         #act
         guestResponse = self.getResponse(path)
@@ -118,8 +118,8 @@ class GeocamTestUrls(TestCase):
         recipient = User.objects.all()[2]
 
         #arrange
-        # url design is /talk/messages/<recipient username>/<author username>
-        path = "/talk/messages/%s/%s" % (recipient.username, author.username)
+        # url design is FIXME/messages/<recipient username>/<author username>
+        path = "FIXME/messages/%s/%s" % (recipient.username, author.username)
         template = "geocamTalk/message_list.html"
 
         #act

@@ -71,7 +71,7 @@ class GeocamTalkMessageSaveTest(TestCase):
         author = User.objects.get(username="rhornsby")
         self.client.login(username=author.username, password='geocam')
 
-        response = self.client.post(reverse("talk_create_message"),
+        response = self.client.post(reverse("geocamTalk_create_message"),
                                   data={"content": content,
                                         "latitude": GeocamTalkMessageSaveTest.cmusv_lat,
                                         "longitude": GeocamTalkMessageSaveTest.cmusv_lon,
@@ -92,7 +92,7 @@ class GeocamTalkMessageSaveTest(TestCase):
         recipienta = User.objects.all()[1]
         recipientb = User.objects.all()[2]
 
-        response = self.client.post(reverse("talk_create_message"),
+        response = self.client.post(reverse("geocamTalk_create_message"),
                                   data={"content": content,
                                         "latitude": GeocamTalkMessageSaveTest.cmusv_lat,
                                         "longitude": GeocamTalkMessageSaveTest.cmusv_lon,
@@ -112,7 +112,7 @@ class GeocamTalkMessageSaveTest(TestCase):
         timestamp = self.now
         author = User.objects.get(username="rhornsby")
         self.client.login(username=author.username, password='geocam')
-        response = self.client.post(reverse("talk_create_message_json"),
+        response = self.client.post(reverse("geocamTalk_create_message_json"),
                                   data={"message": json.dumps({
                                         "content": content,
                                         "contentTimestamp": time.mktime(timestamp.timetuple()),
@@ -137,7 +137,7 @@ class GeocamTalkMessageSaveTest(TestCase):
         testAudioFile = 'media/geocamTalk/test/%s/%s/%s/test.mp4' % (year, month, day)
         self._createFile(filename=testAudioFile, filesize=100 * 1024)
         f = open(testAudioFile, "rb")
-        response = self.client.post(reverse("talk_create_message_json"),
+        response = self.client.post(reverse("geocamTalk_create_message_json"),
                                     data={'audio': f,
                                           "message": json.dumps({
                                           "content": content,
@@ -198,7 +198,7 @@ class GeocamTalkMessageSaveTest(TestCase):
         author = User.objects.get(username="rhornsby")
         self.client.login(username=author.username, password='geocam')
 
-        response = self.client.post(reverse("talk_create_message"),
+        response = self.client.post(reverse("geocamTalk_create_message"),
                                   data={"latitude": GeocamTalkMessageSaveTest.cmusv_lat,
                                         "longitude": GeocamTalkMessageSaveTest.cmusv_lon,
                                         "author": author.pk})
@@ -215,7 +215,7 @@ class GeocamTalkMessageSaveTest(TestCase):
         self.client.login(username=msg.author.username, password='geocam')
 
         # act
-        response = self.client.get(reverse("talk_message_details_json", args=[msg.pk]))
+        response = self.client.get(reverse("geocamTalk_message_details_json", args=[msg.pk]))
 
         # assert
         self.assertContains(response, stringified_msg)
@@ -285,7 +285,7 @@ class GeocamTalkMessageSaveTest(TestCase):
         msg.recipients.add(recipient)
         msg.recipients.add(User.objects.all()[2])
         msg.save()
-        response = self.client.get(reverse("talk_message_list_author_json", args=[author.username])
+        response = self.client.get(reverse("geocamTalk_message_list_author_json", args=[author.username])
                                    + '?since=%s' % before_new_message)
         self.assertContains(response, '"msgCnt": 1')
         # I dont want to delete this because I wasted a bunch of time on it:
@@ -297,7 +297,7 @@ class GeocamTalkMessageSaveTest(TestCase):
         self.client.login(username=author.username, password='geocam')
         ordered_messages = TalkMessage.objects.all().order_by('-pk')
         messageid = ordered_messages[0].pk - 1
-        response = self.client.get(reverse("talk_message_list_all_json") + '?since=%s' % messageid)
+        response = self.client.get(reverse("geocamTalk_message_list_all_json") + '?since=%s' % messageid)
         self.assertContains(response, '"messageId": %s' % ordered_messages[0].pk)
         self.assertContains(response, '"authorUsername": "%s"' % ordered_messages[0].author.username)
         self.assertContains(response, '"authorFullname": "%s"' % ordered_messages[0].get_author_string())
@@ -322,7 +322,8 @@ class GeocamTalkMessageSaveTest(TestCase):
         ordered_messages = TalkMessage.getMessages(recipient=author).order_by("-pk")
 
         messageid = ordered_messages[0].pk - 1
-        response = self.client.get(reverse("talk_message_list_author_json", args=[author.username])
+        response = self.client.get(reverse("geocamTalk_message_list_author_json",
+                                           args=[author.username])
                                    + '?since=%s' % messageid)
         self.assertContains(response, '"messageId": %s' % ordered_messages[0].pk)
         for msg in ordered_messages[1:]:

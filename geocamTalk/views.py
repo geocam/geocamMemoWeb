@@ -139,11 +139,11 @@ def create_message(request):
             msg.save()
             form.save_m2m()
             msg.push_to_phone(True)
-            return HttpResponseRedirect(reverse("talk_message_list_all"))
+            return HttpResponseRedirect(reverse("geocamTalk_message_list_all"))
         else:
             return render_to_response('geocamTalk/message_form.html',
-                                  dict(form=form),
-                                  context_instance=RequestContext(request))
+                                      dict(form=form),
+                                      context_instance=RequestContext(request))
     else:
         form = GeocamTalkForm()
         return render_to_response('geocamTalk/message_form.html',
