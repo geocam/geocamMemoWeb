@@ -39,7 +39,8 @@ def message_map(request):
     messages = TalkMessage.getMessages()
     return render_to_response('geocamTalk/map.html',
                               dict(gc_msg=messages,
-                                   first_geolocation=get_first_geolocation(messages)),
+                                   first_geolocation=get_first_geolocation(messages),
+                                   timestamp=TalkMessage.getLargestMessageId()),
                               context_instance=RequestContext(request))
 
 
