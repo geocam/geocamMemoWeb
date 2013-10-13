@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load url from future %}
 <html>
     <head>
     	<meta charset="utf-8">
@@ -25,7 +26,7 @@
 			var new_message_count = {{ user.profile.getUnreadMessageCount }};
 			
 			var updateFunction = function() {
-				var url = '{% url geocamTalk_message_list_all_json %}';
+				var url = '{% url 'geocamTalk_message_list_all_json' %}';
 		    		
 		    	url += '?since=' + running_timestamp;
 		    	$.getJSON(url, function(data) {
@@ -38,7 +39,7 @@
 		    			var authorUsername = msg['authorUsername'];
 		    			var authorFullname = msg['authorFullname'];
 		    			{% if recipient %}
-		    			    authorFullname = '<a href="{% url geocamTalk_message_list_to recipient.username %}/' +authorUsername+ '">' +authorFullname+ '</a>' ;
+		    			    authorFullname = '<a href="{% url 'geocamTalk_message_list_to' recipient.username %}/' +authorUsername+ '">' +authorFullname+ '</a>' ;
 		    			{% endif %}
 		    			
 		    			var msgDate = new Date (msg['contentTimestamp']);
@@ -68,7 +69,7 @@
 						&& $('div[data-role="page"]').find('#clear_link').length == 0) {
 						var link = $('<a href="#" id="clear_link" data-role="button" data-inline="true" data-theme="c" class="ui-btn ui-btn-inline ui-btn-corner-all ui-shadow ui-btn-up-c"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">Clear Received Messages</span></span></a>');
 						link.click(function() {
-							$.get('{% url geocamTalk_clear_messages %}', function(data) {
+							$.get('{% url 'geocamTalk_clear_messages' %}', function(data) {
 								$('div[data-role="page"]').each(function() {
 									$(this).find('#clear_link').remove();
 									$(this).find('#new_message_count').html(0);
@@ -93,19 +94,19 @@
 	        <header>
 	        	<div data-role="header">
 	        		<h1>{% block pagetitle %}GeoCam Talk{% endblock %}</h1>
-	        		<a href="{% url geocamTalk_message_list_all %}" data-icon="home" data-iconpos="notext" data-direction="reverse" class="ui-btn-right jqm-home">Home</a>
+	        		<a href="{% url 'geocamTalk_message_list_all' %}" data-icon="home" data-iconpos="notext" data-direction="reverse" class="ui-btn-right jqm-home">Home</a>
 	        		<div data-role="navbar">
 		        		<ul id="bigsigh">
-		        			<li><a id="my_messages_link" href="{% url geocamTalk_message_list_to user.username %}">My Messages (<span id="new_message_count">{{user.profile.getUnreadMessageCount}}</span>)</a></li>
-                			<li><a href="{% url geocamTalk_message_list_all %}">All Messages</a></li>
-                			<li><a href="{% url geocamTalk_message_map %}">Talk Map</a></li>
+		        			<li><a id="my_messages_link" href="{% url 'geocamTalk_message_list_to' user.username %}">My Messages (<span id="new_message_count">{{user.profile.getUnreadMessageCount}}</span>)</a></li>
+                			<li><a href="{% url 'geocamTalk_message_list_all' %}">All Messages</a></li>
+                			<li><a href="{% url 'geocamTalk_message_map' %}">Talk Map</a></li>
 		        		</ul>
 	        		</div>
 	        	</div>
 	        </header>
 	        <content>
 	            <div data-role="content">
-	            <a id="new_message_link" href="{% url geocamTalk_create_message %}" data-role="button" data-inline="true">New Message</a>
+	            <a id="new_message_link" href="{% url 'geocamTalk_create_message' %}" data-role="button" data-inline="true">New Message</a>
 	            {% block content %}
 	            {% endblock %}
 	            </div>

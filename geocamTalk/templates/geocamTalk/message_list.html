@@ -1,4 +1,5 @@
 {% extends "geocamTalk/base.html" %}
+{% load url from future %}
 
 {% block title%}GeoCam Talk Messages{% endblock %}
 
@@ -37,12 +38,12 @@
 	  <p id="message_{{m.pk}}_header">
 	  On {{ m.get_date_string }}
 	  {% if recipient %} 
-	  <a href="{% url geocamTalk.views.message_list recipient.username m.author.username %}"> 
+	  <a href="{% url 'geocamTalk.views.message_list' recipient.username m.author.username %}"> 
           {{ m.get_author_string}}</a>
       {% else %}
           {{ m.get_author_string}}
       {% endif %}
-	  {% if m.has_geolocation %}<a href="{% url geocamTalk.views.message_details m.pk %}" data-rel="dialog" data-transition="pop" data-inline="true" data-role="button" data-icon="geoCam-map" data-iconpos="notext">Map Info</a>{%endif%}
+	  {% if m.has_geolocation %}<a href="{% url 'geocamTalk.views.message_details' m.pk %}" data-rel="dialog" data-transition="pop" data-inline="true" data-role="button" data-icon="geoCam-map" data-iconpos="notext">Map Info</a>{%endif%}
 	  {% if m.has_audio %}
           <a class="media" href="{{m.audio_file.url}}"></a>
       {%endif%}

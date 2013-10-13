@@ -1,4 +1,5 @@
 {% extends "geocamTalk/base.html" %}
+{% load url from future %}
 
 {% block js %}
 <script>
@@ -33,7 +34,7 @@ function createMap(latitude, longitude) {
 		$(messages).each(function(i, msg) {
 			google.maps.event.addListener(msg.marker,"click", function() {
 				infoWindow.close();
-				$.getJSON("{% url geocamTalk_message_list_all %}/details/" + msg.pk + ".json", function(data) {
+				$.getJSON("{% url 'geocamTalk_message_list_all' %}/details/" + msg.pk + ".json", function(data) {
 					var messageHtml = "<strong>" + data['authorFullname'] + "</strong><br />"
                                     + "<span>" + data['contentTimestamp'] + "</span>"
 					                + "<p>" + data['content'] + "</p>"

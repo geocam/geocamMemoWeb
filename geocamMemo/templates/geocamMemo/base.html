@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load url from future %}
 <html>
   <head>
     <meta charset="utf-8">
@@ -30,8 +31,8 @@
           <a href="/" data-icon="home" data-iconpos="notext" data-direction="reverse" class="ui-btn-right jqm-home">Home</a>
           <div data-role="navbar">
             <ul>
-              <li><a href="{% url memo_message_list_all %}">Memo List</a></li>
-              <li><a href="{% url memo_message_map %}">Memo Map</a></li>
+              <li><a href="{% url 'memo_message_list_all' %}">Memo List</a></li>
+              <li><a href="{% url 'memo_message_map' %}">Memo Map</a></li>
             </ul>
           </div>
         </div>

@@ -1,4 +1,5 @@
 {% extends "geocamMemo/base.html" %}
+{% load url from future %}
 {% block title%}Create New GeoCam Memo Message{% endblock %}
 {% block content %}
 
@@ -74,7 +75,7 @@
 
 <p><div id='status'></div></p>
 <p>Current time: <span id='time'></span></p>
-<form action="{% url memo_create_message %}" method="post">
+<form action="{% url 'memo_create_message' %}" method="post">
 	{% csrf_token %}
 	<dl>
         <dt>{{ form.content.label_tag }}</dt>

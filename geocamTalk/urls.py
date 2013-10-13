@@ -5,11 +5,12 @@
 # __END_LICENSE__
 
 import django.views.generic.simple
-from django.conf.urls.defaults import *  # pylint: disable=W0401
+from django.conf.urls import *  # pylint: disable=W0401
+from django.views.generic import RedirectView
 
 urlpatterns = patterns('geocamTalk.views',
-    url(r'^$', django.views.generic.simple.redirect_to,
-        {'url': 'messages', 'permanent': False},
+    url(r'^$', RedirectView.as_view(url='messages'),
+        {'permanent': False},
         name='geocamTalk_home'),
                        
     url(r'^register$', 'register',
